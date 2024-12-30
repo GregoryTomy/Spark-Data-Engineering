@@ -154,7 +154,7 @@ class TableETL(ABC):
         """
         logging.info(f"Validating dataset for table: {self.name}")
 
-        ge_path = "elt/great_expectations"
+        ge_path = "etl/great_expectations"
         expec_json_path = f"{ge_path}/expectations/{self.name}.json"
         file_path = Path(expec_json_path)
 

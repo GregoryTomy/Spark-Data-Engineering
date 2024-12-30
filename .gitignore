@@ -13,3 +13,5 @@ __pycache__/
 *.tmp
 
 spark/metastore_db/
+
+etl/great_expectations/uncommited/
