@@ -15,6 +15,7 @@ services:
       - "3000:3000"
     volumes:
       - ./spark:/opt/spark/work-dir
+      - ./datagen:/opt/spark/work-dir/datagen
       - spark-logs:/opt/spark/spark-events
     environment:
       UPSTREAM_DRIVERNAME: postgresql
