@@ -1,0 +1,15 @@
+rainforest/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+.vscode/
+.idea/
+
+*.log
+*.tmp
+
+spark/metastore_db/
