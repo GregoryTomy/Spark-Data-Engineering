@@ -189,16 +189,10 @@ def generate_clickstream_data(user_ids, product_ids, order_ids):
         for _ in range(random.randint(5, 20)):
             event_type = random.choice(event_types)
             product_id = (
-                random.choice(product_ids)
-                if event_type != "purchase"
-                else None
+                random.choice(product_ids) if event_type != "purchase" else None
             )
-            order_id = (
-                random.choice(order_ids) if event_type == "purchase" else None
-            )
-            timestamp = fake.date_time_between(
-                start_date="-1y", end_date="now"
-            )
+            order_id = random.choice(order_ids) if event_type == "purchase" else None
+            timestamp = fake.date_time_between(start_date="-1y", end_date="now")
             created_ts = timestamp
             clickstreams.append(
                 (
@@ -221,11 +215,9 @@ def generate_brand_data(num_brands, user_ids):
     for _ in range(num_brands):
         brand_name = fake.company()
         country = fake.country()
-        created_ts = fake.date_time_between(start_date='-1y', end_date='now')
+        created_ts = fake.date_time_between(start_date="-1y", end_date="now")
         last_updated_by = random.choice(user_ids)
-        last_updated_ts = fake.date_time_between(
-            start_date=created_ts, end_date='now'
-        )
+        last_updated_ts = fake.date_time_between(start_date=created_ts, end_date="now")
         brand_data.append(
             (brand_name, country, created_ts, last_updated_by, last_updated_ts)
         )
@@ -240,11 +232,9 @@ def generate_manufacturer_data(num_manufacturers, user_ids):
     for _ in range(num_manufacturers):
         manufacturer_name = fake.company()
         manufacturer_type = fake.word()
-        created_ts = fake.date_time_between(start_date='-1y', end_date='now')
+        created_ts = fake.date_time_between(start_date="-1y", end_date="now")
         last_updated_by = random.choice(user_ids)
-        last_updated_ts = fake.date_time_between(
-            start_date=created_ts, end_date='now'
-        )
+        last_updated_ts = fake.date_time_between(start_date=created_ts, end_date="now")
         manufacturer_data.append(
             (
                 manufacturer_name,
@@ -265,11 +255,9 @@ def generate_ratings_data(num_ratings, product_ids, user_ids):
     for _ in range(num_ratings):
         product_id = random.choice(product_ids)
         rating = round(random.uniform(0, 5), 2)
-        created_ts = fake.date_time_between(start_date='-1y', end_date='now')
+        created_ts = fake.date_time_between(start_date="-1y", end_date="now")
         last_updated_by = random.choice(user_ids)
-        last_updated_ts = fake.date_time_between(
-            start_date=created_ts, end_date='now'
-        )
+        last_updated_ts = fake.date_time_between(start_date=created_ts, end_date="now")
         ratings_data.append(
             (product_id, rating, created_ts, last_updated_by, last_updated_ts)
         )
@@ -283,21 +271,21 @@ num_products = 500
 # Generate and insert user data
 user_data = generate_user_data(num_users)
 insert_query = (
-    'INSERT INTO AppUser (username, email, is_active, created_ts,'
-    ' last_updated_by, last_updated_ts) VALUES %s'
+    "INSERT INTO AppUser (username, email, is_active, created_ts,"
+    " last_updated_by, last_updated_ts) VALUES %s"
 )
 execute_values(cur, insert_query, user_data)
 conn.commit()
 
 # Get user IDs for other tables
-cur.execute('SELECT user_id FROM AppUser')
+cur.execute("SELECT user_id FROM AppUser")
 user_ids = [row[0] for row in cur.fetchall()]
 
 num_brands = 50
 brand_data = generate_brand_data(num_brands, user_ids)
 insert_query = (
-    'INSERT INTO Brand (name, country, created_ts, last_updated_by,'
-    ' last_updated_ts) VALUES %s'
+    "INSERT INTO Brand (name, country, created_ts, last_updated_by,"
+    " last_updated_ts) VALUES %s"
 )
 execute_values(cur, insert_query, brand_data)
 conn.commit()
@@ -305,8 +293,8 @@ conn.commit()
 num_manufacturers = 50
 manufacturer_data = generate_manufacturer_data(num_manufacturers, user_ids)
 insert_query = (
-    'INSERT INTO Manufacturer (name, type, created_ts, last_updated_by,'
-    ' last_updated_ts) VALUES %s'
+    "INSERT INTO Manufacturer (name, type, created_ts, last_updated_by,"
+    " last_updated_ts) VALUES %s"
 )
 execute_values(cur, insert_query, manufacturer_data)
 conn.commit()
@@ -378,12 +366,8 @@ cur.execute("SELECT category_id FROM Category")
 category_ids = [row[0] for row in cur.fetchall()]
 
 # Generate and insert product_category data
-product_category_data = generate_product_category_data(
-    product_ids, category_ids
-)
-insert_query = (
-    "INSERT INTO ProductCategory (product_id, category_id) VALUES %s"
-)
+product_category_data = generate_product_category_data(product_ids, category_ids)
+insert_query = "INSERT INTO ProductCategory (product_id, category_id) VALUES %s"
 execute_values(cur, insert_query, product_category_data)
 conn.commit()
 
@@ -395,20 +379,17 @@ buyer_ids = [row[0] for row in cur.fetchall()]
 num_orders = 5000
 order_data = generate_order_data(buyer_ids, num_orders, user_ids)
 insert_query = (
-    'INSERT INTO orders (buyer_id, order_ts, total_price, created_ts)'
-    ' VALUES %s'
+    "INSERT INTO orders (buyer_id, order_ts, total_price, created_ts)" " VALUES %s"
 )
 execute_values(cur, insert_query, order_data)
 conn.commit()
 
 # Get order IDs for order_item table
-cur.execute('SELECT order_id FROM orders')
+cur.execute("SELECT order_id FROM orders")
 order_ids = [row[0] for row in cur.fetchall()]
 
 # Generate and insert order_item data
-order_item_data = generate_order_item_data(
-    order_ids, seller_ids, product_ids, user_ids
-)
+order_item_data = generate_order_item_data(order_ids, seller_ids, product_ids, user_ids)
 insert_query = (
     "INSERT INTO OrderItem (order_id, product_id, seller_id, quantity,"
     " base_price, tax, created_ts) VALUES %s"
@@ -417,7 +398,7 @@ execute_values(cur, insert_query, order_item_data)
 conn.commit()
 
 # Get user IDs for clickstream table
-cur.execute('SELECT user_id FROM AppUser')
+cur.execute("SELECT user_id FROM AppUser")
 user_ids = [row[0] for row in cur.fetchall()]
 
 # Generate and insert clickstream data

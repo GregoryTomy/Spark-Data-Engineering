@@ -16,6 +16,7 @@ services:
     volumes:
       - ./spark:/opt/spark/work-dir
       - ./datagen:/opt/spark/work-dir/datagen
+      - ./etl:/opt/spark/work-dir/etl
       - spark-logs:/opt/spark/spark-events
     environment:
       UPSTREAM_DRIVERNAME: postgresql
@@ -44,6 +45,7 @@ services:
     image: spark-image
     entrypoint: ['./entrypoint.sh', 'worker']
     volumes:
+      - ./etl:/opt/spark/work-dir/etl
       - ./spark:/opt/spark/work-dir
       - spark-logs:/opt/spark/spark-events
     env_file:
