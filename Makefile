@@ -7,7 +7,7 @@ docker-up:
 up: build docker-up
 
 down:
-	docker compose down
+	docker compose down -v --remove-orphans
 
 fake-datagen:
 	docker exec spark-master bash -c "python3 /opt/spark/work-dir/datagen/datagen.py"
@@ -17,3 +17,8 @@ create-buckets:
 
 setup: fake-datagen create-buckets
 	@echo "Setup complete!"
+
+reset: down up
+
+bash:
+	docker exec -it spark-master bash
