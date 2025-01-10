@@ -23,6 +23,27 @@ class TestDimProductSilverETL:
     """
 
     def test_transform_upstream(self, spark: SparkSession):
+        """
+        Test the `transform_upstream` method of the `DimProductSiverETL` class.
+        This test verifies that the `transform_upstream` method correctly transforms
+        the input datasets (product, brand, and manufacturer) into the expected
+        output dataset with the correct schema and data.
+        Args:
+            spark (SparkSession): The Spark session to use for creating DataFrames.
+        Steps:
+            1. Define the schemas for product, brand, and manufacturer datasets.
+            2. Create sample data for product, brand, and manufacturer datasets.
+            3. Create DataFrames from the sample data using the defined schemas.
+            4. Create ETLDataSet instances for product, brand, and manufacturer datasets.
+            5. Instantiate the `DimProductSiverETL` class with the Spark session.
+            6. Call the `transform_upstream` method with the ETLDataSet instances.
+            7. Verify that the transformed dataset has the expected columns.
+            8. Verify that the transformed dataset has the expected data.
+        Asserts:
+            - The columns of the transformed dataset match the expected columns.
+            - The data of the transformed dataset matches the expected data.
+        """
+
         product_schema = [
             "product_id",
             "name",
