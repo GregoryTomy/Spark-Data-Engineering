@@ -50,6 +50,7 @@ class TestDimBuyerSilverETL:
             "last_updated_ts",
             "etl_inserted",
         ]
+
         buyer_schema = [
             "buyer_id",
             "user_id",

@@ -75,6 +75,7 @@ class TestProductBronzeETL:
                 "2024-01-02",
             ),
         ]
+
         schema = [
             "product_id",
             "name",
