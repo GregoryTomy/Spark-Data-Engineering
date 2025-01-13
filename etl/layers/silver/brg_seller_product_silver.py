@@ -40,7 +40,7 @@ class SellerProductSiverETL(TableETL):
         name: str = "brg_seller_product",
         primary_keys: List[str] = ["product_id", "category_id"],
         storage_path: str = "s3a://rainforest/delta/silver/brg_seller_product",
-        data_format: str = "detla",
+        data_format: str = "delta",
         database: str = "rainforest",
         partition_keys: List[str] = ["etl_inserted"],
         run_upstream=True,

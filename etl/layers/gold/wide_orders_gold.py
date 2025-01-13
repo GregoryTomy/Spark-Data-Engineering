@@ -8,7 +8,30 @@ from etl.layers.silver.fact_orders_silver import FactOrdersSiverETL
 from etl.utils.base_table import ETLDataSet, TableETL
 
 
-class WideOrdersGoldSiverETL(TableETL):
+class WideOrdersGoldETL(TableETL):
+    """
+    WideOrdersGoldETL is a class that extends the TableETL class to perform ETL operations on wide orders data.
+    It extracts data from upstream ETL tables, transforms the data by adding new columns, and reads the data from storage.
+    Attributes:
+        spark (SparkSession): The Spark session object.
+        upstream_tables (Optional[List[Type[TableETL]]]): A list of upstream ETL table classes.
+        name (str): The name of the ETL table.
+        primary_keys (List[str]): A list of primary key columns.
+        storage_path (str): The storage path for the ETL table.
+        data_format (str): The data format for the ETL table.
+        database (str): The database name for the ETL table.
+        partition_keys (List[str]): A list of partition key columns.
+        run_upstream (bool): A flag to indicate whether to run upstream ETL processes.
+        write_data (bool): A flag to indicate whether to write data to storage.
+    Methods:
+        extract_upstream(self) -> List[ETLDataSet]:
+            Returns a list of ETLDataSet objects containing the extracted data.
+        transform_upstream(self, upstream_datasets: List[ETLDataSet]) -> ETLDataSet:
+            Returns a new ETLDataSet object with the transformed data.
+        read(self, partition_values: Optional[Dict[str, str]] = None) -> ETLDataSet:
+            Returns an ETLDataSet object containing the selected data, metadata, and configuration details.
+    """
+
     def __init__(
         self,
         spark: SparkSession,
@@ -18,8 +41,8 @@ class WideOrdersGoldSiverETL(TableETL):
         ],
         name: str = "wide_orders",
         primary_keys: List[str] = ["order_id"],
-        storage_path: str = "s3a://rainforest/delta/silver/wide_orders",
-        data_format: str = "detla",
+        storage_path: str = "s3a://rainforest/delta/gold/wide_orders",
+        data_format: str = "delta",
         database: str = "rainforest",
         partition_keys: List[str] = ["etl_inserted"],
         run_upstream=True,

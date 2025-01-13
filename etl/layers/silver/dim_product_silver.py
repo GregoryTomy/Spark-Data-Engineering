@@ -50,7 +50,7 @@ class DimProductSiverETL(TableETL):
         name: str = "dim_product",
         primary_keys: List[str] = ["product_id"],
         storage_path: str = "s3a://rainforest/delta/silver/dim_product",
-        data_format: str = "detla",
+        data_format: str = "delta",
         database: str = "rainforest",
         partition_keys: List[str] = ["etl_inserted"],
         run_upstream=True,

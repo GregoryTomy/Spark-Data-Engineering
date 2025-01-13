@@ -43,7 +43,7 @@ class DimBuyerSiverETL(TableETL):
         name: str = "dim_buyer",
         primary_keys: List[str] = ["buyer_id"],
         storage_path: str = "s3a://rainforest/delta/silver/dim_buyer",
-        data_format: str = "detla",
+        data_format: str = "delta",
         database: str = "rainforest",
         partition_keys: List[str] = ["etl_inserted"],
         run_upstream=True,

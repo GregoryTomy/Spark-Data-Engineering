@@ -41,7 +41,7 @@ class FactOrderItemsSiverETL(TableETL):
         name: str = "fact_order_item",
         primary_keys: List[str] = ["order_item_id"],
         storage_path: str = "s3a://rainforest/delta/silver/fact_order_item",
-        data_format: str = "detla",
+        data_format: str = "delta",
         database: str = "rainforest",
         partition_keys: List[str] = ["etl_inserted"],
         run_upstream=True,

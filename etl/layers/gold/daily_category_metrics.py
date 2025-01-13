@@ -2,43 +2,46 @@ from datetime import datetime
 from typing import Dict, List, Optional, Type
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, lit
-from etl.layers.bronze.category import CategoryBronzeETL
+from pyspark.sql.functions import col, lit, explode, expr
+from pyspark.sql.functions import mean as spark_mean
+from etl.layers.gold.wide_order_items_gold import WideOrderItemsGoldETL
 from etl.utils.base_table import ETLDataSet, TableETL
 
 
-class DimCategorySiverETL(TableETL):
+class DailyCategoryMetricsGoldETL(TableETL):
     """
-    DimCategorySiverETL is a class that extends the TableETL base class to perform ETL operations for the dim_category table in the silver layer.
+    DailyCategoryMetricsGoldETL is a class that extends the TableETL base class to perform ETL operations for daily category metrics in the gold layer.
+
     Attributes:
-        spark (SparkSession): The Spark session object.
-        upstream_tables (Optional[List[Type[TableETL]]]): A list of upstream ETL table classes.
+        spark (SparkSession): The Spark session to use for ETL operations.
+        upstream_tables (Optional[List[Type[TableETL]]]): List of upstream ETL table classes to extract data from.
         name (str): The name of the ETL table.
-        primary_keys (List[str]): A list of primary key columns.
-        storage_path (str): The storage path for the ETL table.
-        data_format (str): The data format for the ETL table.
+        primary_keys (List[str]): List of primary key columns for the ETL table.
+        storage_path (str): The storage path for the ETL table data.
+        data_format (str): The data format for the ETL table (e.g., "delta").
         database (str): The database name for the ETL table.
-        partition_keys (List[str]): A list of partition key columns.
-        run_upstream (bool): A flag indicating whether to run upstream ETL processes.
-        write_data (bool): A flag indicating whether to write data to storage.
+        partition_keys (List[str]): List of partition key columns for the ETL table.
+        run_upstream (bool): Flag to indicate whether to run upstream ETL processes.
+        write_data (bool): Flag to indicate whether to write data to storage.
+
     Methods:
-        extract_upstream(self) -> List[ETLDataSet]:
-            Extracts data from upstream ETL tables and returns a list of ETLDataSet objects.
-        transform_upstream(self, upstream_datasets: List[ETLDataSet]) -> ETLDataSet:
-            Transforms the upstream datasets by adding an ETL insertion timestamp and returns a new ETLDataSet object.
-        read(self, partition_values: Optional[Dict[str, str]] = None) -> ETLDataSet:
-            Reads data from the specified storage path and returns it as an ETLDataSet object.
+        extract_upstream() -> List[ETLDataSet]:
+            Returns a list of datasets extracted from the upstream ETL tables.
+
+        transform_upstream(upstream_datasets: List[ETLDataSet]) -> ETLDataSet:
+
+        read(partition_values: Optional[Dict[str, str]] = None) -> ETLDataSet:
     """
 
     def __init__(
         self,
         spark: SparkSession,
         upstream_tables: Optional[List[Type[TableETL]]] = [
-            CategoryBronzeETL,
+            WideOrderItemsGoldETL,
         ],
-        name: str = "dim_category",
-        primary_keys: List[str] = ["category_id"],
-        storage_path: str = "s3a://rainforest/delta/silver/dim_category",
+        name: str = "daily_category_metrics",
+        primary_keys: List[str] = ["order_date", "category"],
+        storage_path: str = "s3a://rainforest/delta/gold/daily_category_metrics",
         data_format: str = "delta",
         database: str = "rainforest",
         partition_keys: List[str] = ["etl_inserted"],
@@ -84,27 +87,58 @@ class DimCategorySiverETL(TableETL):
 
     def transform_upstream(self, upstream_datasets: List[ETLDataSet]) -> ETLDataSet:
         """
-        Transforms the upstream datasets by joining appuser and category data, renaming common columns,
-        and adding an ETL insertion timestamp.
+        Transforms the upstream datasets to generate daily category metrics.
         Args:
-            upstream_datasets (List[ETLDataSet]): A list of ETLDataSet objects where the first element
-                                                  is the appuser dataset and the second element is the category dataset.
+            upstream_datasets (List[ETLDataSet]): List of upstream ETL datasets.
+                The first dataset in the list is expected to contain order data.
         Returns:
-            ETLDataSet: A new ETLDataSet object containing the transformed data.
-        Raises:
-            ValueError: If the upstream_datasets list does not contain exactly two elements.
+            ETLDataSet: A new ETLDataSet containing the transformed daily category metrics data.
+        Transformation Steps:
+            1. Extracts the current data from the first upstream dataset.
+            2. Casts the 'order_ts' column to 'order_date'.
+            3. Filters the data to include only active orders.
+            4. Explodes the 'categories' column to create a row for each category.
+            5. Groups the data by 'order_date' and 'category' and calculates:
+                - Mean of 'actual_price' as 'mean_actual_price'.
+                - Median of 'actual_price' as 'median_actual_price' using percentile approximation.
+            6. Adds a column 'etl_inserted' with the current timestamp.
+            7. Creates a new ETLDataSet with the transformed data and updates the current data.
         """
 
-        category_data = upstream_datasets[0].current_data
+        wide_orders_data = upstream_datasets[0].current_data
+        wide_orders_data = wide_orders_data.withColumn(
+            "order_date", col("order_ts").cast("date")
+        )
+
+        wide_orders_data = wide_orders_data.filter(col("is_active"))
+
+        data_exploded = wide_orders_data.select(
+            "order_id",
+            "order_date",
+            "product_id",
+            "categories",
+            "actual_price",
+            explode("categories").alias("category"),
+            "etl_inserted",
+        )
+
+        category_metrics_data = data_exploded.groupBy(
+            "order_date",
+            "category",
+        ).agg(
+            spark_mean("actual_price").alias("mean_actual_price"),
+            expr("percetile_approx(actual_price, 0.5)").alias("meadian_actual_price"),
+        )
+
         current_timestamp = datetime.now()
 
-        tranformed_data = category_data.withColumn(
+        category_metrics_data = category_metrics_data.withColumn(
             "etl_inserted", lit(current_timestamp)
         )
 
         etl_dataset = ETLDataSet(
             name=self.name,
-            current_data=tranformed_data,
+            current_data=category_metrics_data,
             primary_keys=self.primary_keys,
             storage_path=self.storage_path,
             data_format=self.data_format,
@@ -129,11 +163,9 @@ class DimCategorySiverETL(TableETL):
         """
 
         selected_columns = [
-            col("category_id"),
-            col("name").alias("category_name"),
-            col("created_ts"),
-            col("last_updated_by"),
-            col("last_updated_ts"),
+            col("order_date"),
+            col("total_price_sum"),
+            col("total_price_mean"),
             col("etl_inserted"),
         ]
 
@@ -162,17 +194,17 @@ class DimCategorySiverETL(TableETL):
 
             partition_filter = f"etl_inserted = '{latest_partition}'"
 
-        dim_category_data = (
+        fact_order_data = (
             self.spark.read.format(self.data_format)
             .write(self.storage_path)
             .filter(partition_filter)
         )
 
-        dim_category_data = dim_category_data.select(selected_columns)
+        fact_order_data = fact_order_data.select(selected_columns)
 
         etl_dataset = ETLDataSet(
             name=self.name,
-            current_data=dim_category_data,
+            current_data=fact_order_data,
             primary_keys=self.primary_keys,
             storage_path=self.storage_path,
             data_format=self.data_format,
