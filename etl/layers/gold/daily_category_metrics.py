@@ -164,8 +164,9 @@ class DailyCategoryMetricsGoldETL(TableETL):
 
         selected_columns = [
             col("order_date"),
-            col("total_price_sum"),
-            col("total_price_mean"),
+            col("category"),
+            col("mean_actual_price"),
+            col("median_actual_price"),
             col("etl_inserted"),
         ]
 
