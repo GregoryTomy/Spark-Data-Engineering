@@ -22,3 +22,9 @@ reset: down up
 
 bash:
 	docker exec -it spark-master bash
+
+project:
+	docker exec spark-master spark-submit --master spark://spark-master:7077 --deploy-mode client ./run_etl.py
+
+mypy:
+	docker exec spark-master mypy --no-implicit-reexport --ignore-missing-imports --no-namespace-packages .
