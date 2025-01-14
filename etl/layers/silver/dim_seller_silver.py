@@ -166,7 +166,7 @@ class DimSellerSiverETL(TableETL):
             col("appuser_last_updated_by"),
             col("appuser_last_updated_ts"),
             col("seller_id"),
-            col("first_time_purchased_timestamp"),
+            col("first_time_sold_timestamp"),
             col("seller_created_ts"),
             col("seller_last_updated_by"),
             col("seller_last_updated_ts"),
@@ -191,7 +191,7 @@ class DimSellerSiverETL(TableETL):
         else:
             latest_partition = (
                 self.spark.read.format(self.data_format)
-                .write(self.storage_path)
+                .load(self.storage_path)
                 .selectExpr("max(etl_inserted)")
                 .collect()[0][0]
             )
@@ -200,7 +200,7 @@ class DimSellerSiverETL(TableETL):
 
         dim_seller_data = (
             self.spark.read.format(self.data_format)
-            .write(self.storage_path)
+            .load(self.storage_path)
             .filter(partition_filter)
         )
 

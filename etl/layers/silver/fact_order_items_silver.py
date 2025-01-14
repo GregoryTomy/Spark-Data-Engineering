@@ -157,7 +157,7 @@ class FactOrderItemsSiverETL(TableETL):
         else:
             latest_partition = (
                 self.spark.read.format(self.data_format)
-                .write(self.storage_path)
+                .load(self.storage_path)
                 .selectExpr("max(etl_inserted)")
                 .collect()[0][0]
             )
@@ -166,7 +166,7 @@ class FactOrderItemsSiverETL(TableETL):
 
         dim_order_item_data = (
             self.spark.read.format(self.data_format)
-            .write(self.storage_path)
+            .load(self.storage_path)
             .filter(partition_filter)
         )
 

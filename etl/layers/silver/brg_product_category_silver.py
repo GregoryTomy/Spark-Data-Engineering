@@ -149,7 +149,7 @@ class ProductCategorySiverETL(TableETL):
         else:
             latest_partition = (
                 self.spark.read.format(self.data_format)
-                .write(self.storage_path)
+                .load(self.storage_path)
                 .selectExpr("max(etl_inserted)")
                 .collect()[0][0]
             )
@@ -158,7 +158,7 @@ class ProductCategorySiverETL(TableETL):
 
         product_category_data = (
             self.spark.read.format(self.data_format)
-            .write(self.storage_path)
+            .load(self.storage_path)
             .filter(partition_filter)
         )
 

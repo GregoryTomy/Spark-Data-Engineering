@@ -198,7 +198,7 @@ class DimProductSiverETL(TableETL):
             col("manufacturer_id"),
             col("brand_name"),
             col("country").alias("brand_country"),
-            col("name").alias("manufacturer_name"),
+            col("manufacturer_name"),
             col("type").alias("manufacturer_type"),
             col("etl_inserted"),
         ]
@@ -221,7 +221,7 @@ class DimProductSiverETL(TableETL):
         else:
             latest_partition = (
                 self.spark.read.format(self.data_format)
-                .write(self.storage_path)
+                .load(self.storage_path)
                 .selectExpr("max(etl_inserted)")
                 .collect()[0][0]
             )
@@ -230,7 +230,7 @@ class DimProductSiverETL(TableETL):
 
         dim_product_data = (
             self.spark.read.format(self.data_format)
-            .write(self.storage_path)
+            .load(self.storage_path)
             .filter(partition_filter)
         )
 

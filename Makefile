@@ -28,3 +28,9 @@ project:
 
 mypy:
 	docker exec spark-master mypy --no-implicit-reexport --ignore-missing-imports --no-namespace-packages .
+
+PYTEST_CMD = docker exec spark-master pytest
+DEFAULT_TEST_DIR = /opt/spark/work-dir/etl/test/unit_tests
+
+test:
+	@$(PYTEST_CMD) $(if $(TEST),$(DEFAULT_TEST_DIR)/$(TEST),$(DEFAULT_TEST_DIR))

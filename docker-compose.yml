@@ -17,6 +17,7 @@ services:
       - ./spark:/opt/spark/work-dir
       - ./datagen:/opt/spark/work-dir/datagen
       - ./etl:/opt/spark/work-dir/etl
+      - ./run_etl.py:/opt/spark/work-dir/run_etl.py
       - spark-logs:/opt/spark/spark-events
     environment:
       UPSTREAM_DRIVERNAME: postgresql
@@ -47,6 +48,7 @@ services:
     volumes:
       - ./etl:/opt/spark/work-dir/etl
       - ./spark:/opt/spark/work-dir
+      - ./run_etl.py:/opt/spark/work-dir/run_etl.py
       - spark-logs:/opt/spark/spark-events
     env_file:
       - .env.spark

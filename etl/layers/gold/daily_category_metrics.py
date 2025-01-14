@@ -107,7 +107,7 @@ class DailyCategoryMetricsGoldETL(TableETL):
 
         wide_orders_data = upstream_datasets[0].current_data
         wide_orders_data = wide_orders_data.withColumn(
-            "order_date", col("order_ts").cast("date")
+            "order_date", col("created_ts").cast("date")
         )
 
         wide_orders_data = wide_orders_data.filter(col("is_active"))
@@ -188,7 +188,7 @@ class DailyCategoryMetricsGoldETL(TableETL):
         else:
             latest_partition = (
                 self.spark.read.format(self.data_format)
-                .write(self.storage_path)
+                .load(self.storage_path)
                 .selectExpr("max(etl_inserted)")
                 .collect()[0][0]
             )
@@ -197,7 +197,7 @@ class DailyCategoryMetricsGoldETL(TableETL):
 
         fact_order_data = (
             self.spark.read.format(self.data_format)
-            .write(self.storage_path)
+            .load(self.storage_path)
             .filter(partition_filter)
         )
 
