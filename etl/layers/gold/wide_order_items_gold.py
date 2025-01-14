@@ -111,6 +111,10 @@ class WideOrderItemsGoldETL(TableETL):
             dim_product_data,
             "product_id",
             "left",
+        ).join(
+            dim_seller_data,
+            "seller_id",
+            "left",
         )
 
         product_category_enriched_data = (

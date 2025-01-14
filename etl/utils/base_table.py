@@ -11,7 +11,7 @@ import great_expectations as gx
 from pyspark.sql import DataFrame
 
 logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 

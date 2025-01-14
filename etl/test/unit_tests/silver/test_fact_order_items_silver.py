@@ -14,6 +14,15 @@ from etl.utils.base_table import ETLDataSet
 
 
 class TestFactOrderItemsSilverETL:
+    """
+    Test suite for the FactOrderItemsSilverETL class.
+    This test suite includes the following test cases:
+    - test_transform_upstream: Tests the transformation logic of the upstream data.
+    Methods:
+        test_transform_upstream(spark: SparkSession):
+            Tests the transformation logic of the upstream data by verifying the schema and data of the transformed dataset.
+    """
+
     def test_transform_upstream(self, spark: SparkSession):
         schema = StructType(
             [

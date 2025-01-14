@@ -11,7 +11,7 @@ from etl.layers.bronze.manufacturer import ManufacturerBronzeETL
 from etl.layers.bronze.product import ProductBronzeETL
 from etl.utils.base_table import ETLDataSet, TableETL
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 
 class DimProductSiverETL(TableETL):

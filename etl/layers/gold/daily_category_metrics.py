@@ -127,7 +127,7 @@ class DailyCategoryMetricsGoldETL(TableETL):
             "category",
         ).agg(
             spark_mean("actual_price").alias("mean_actual_price"),
-            expr("percetile_approx(actual_price, 0.5)").alias("meadian_actual_price"),
+            expr("percentile_approx(actual_price, 0.5)").alias("median_actual_price"),
         )
 
         current_timestamp = datetime.now()

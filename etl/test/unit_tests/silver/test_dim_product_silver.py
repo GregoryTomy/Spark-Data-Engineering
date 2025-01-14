@@ -4,7 +4,7 @@ from pyspark.sql import SparkSession, Row
 from etl.layers.silver.dim_product_silver import DimProductSiverETL
 from etl.utils.base_table import ETLDataSet
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 
 class TestDimProductSilverETL:
@@ -192,9 +192,9 @@ class TestDimProductSilverETL:
 
         actual_columns = set(transformed_dataset.current_data.columns)
 
-        assert (
-            actual_columns == expected_columns
-        ), f"Expected columns {expected_columns}, but got {actual_columns}"
+        assert actual_columns == expected_columns, (
+            f"Expected columns {expected_columns}, but got {actual_columns}"
+        )
 
         expected_data = [
             (
@@ -224,6 +224,6 @@ class TestDimProductSilverETL:
             )
         ]
 
-        assert (
-            transformed_dataset.current_data.collect() == expected_data
-        ), "Tranformed data does not match expected data"
+        assert transformed_dataset.current_data.collect() == expected_data, (
+            "Tranformed data does not match expected data"
+        )
