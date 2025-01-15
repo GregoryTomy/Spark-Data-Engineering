@@ -2,6 +2,14 @@
 
 This repository showcases a complete **end-to-end data pipeline** for an e-commerce dataset, designed following industry-standard best practices in data engineering and analytics. The project leverages **Apache Spark** for distributed data processing, adopts the **Medallion Architecture** for data lake structuring, implements a **One Big Table (OBT)** approach for analytics, and ensures robust testing with **PyTest** and **Great Expectations**.
 
+![Apache Spark](https://img.shields.io/badge/Apache%20Spark-FDEE21?style=flat-square&logo=apachespark&logoColor=black)
+ ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Pytest](https://img.shields.io/badge/pytest-%23ffffff.svg?style=for-the-badge&logo=pytest&logoColor=2f9fe3)
+![Amazon S3](https://img.shields.io/badge/Amazon%20S3-FF9900?style=for-the-badge&logo=amazons3&logoColor=white)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+
+
 ## Table of Contents
 1. [Project Deliverable](#project-deliverable)
 2. [Infrastructure Overview](#infrastructure-overview)
