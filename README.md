@@ -150,3 +150,7 @@ To run the project locally, follow these steps:
     ```
 
 For other available commands, refer to the [Makefile](Makefile).
+
+---
+
+This project was devloped as part of the excellent cource by [Joseph Machado](https://www.startdataengineering.com).
