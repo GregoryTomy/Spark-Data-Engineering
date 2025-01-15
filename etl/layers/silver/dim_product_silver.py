@@ -115,8 +115,8 @@ class DimProductSiverETL(TableETL):
             brand_data.columns, manufacturer_data.columns
         )
 
-        print("Common columns of all datasets:")
-        pprint(common_columns)
+        # print("Common columns of all datasets:")
+        # pprint(common_columns)
 
         product_data = product_data.selectExpr(
             *[

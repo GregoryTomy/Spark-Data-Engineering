@@ -95,7 +95,7 @@ class WideOrdersGoldETL(TableETL):
         """
 
         fact_order_data = upstream_datasets[0].current_data
-        dim_seller_data = upstream_datasets[0].current_data
+        dim_seller_data = upstream_datasets[1].current_data
         current_timestamp = datetime.now()
 
         wide_orders_data = fact_order_data.join(
